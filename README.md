@@ -1,144 +1,66 @@
-# Parametric Overhead Crane Drawing Generator - Backend
+# Parametric Overhead Crane Drawing Generator
 
-FastAPI backend for parametric overhead crane designs and drawing dimension calculations.
+## What this is
+This is a concept drawing tool for a single girder Electric Overhead Traveling (EOT) crane.
+The user enters span, capacity, lift height, and girder height. The app calculates key drawing numbers, renders a dimensioned 2D SVG drawing, and lets the user save, reopen, and edit designs.
 
-## Tech Stack
-- **Python 3.10+**
-- **FastAPI** (REST API framework)
-- **SQLite** (Standard library `sqlite3`, zero external database setup)
-- **Pydantic v2** (Request/response schemas & data validation)
-- **Uvicorn** (ASGI server)
+Concept drawing only — not for manufacturing.
 
----
+## How to run
+1. Install Python 3.10 or newer.
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Start the server:
+   ```bash
+   python -m uvicorn main:app --reload
+   ```
+4. Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser. (The interactive API documentation is available at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)).
 
-## Project Structure
-```
-d:/crane-drawing-generator/
-├── main.py          # FastAPI application & route handlers
-├── database.py      # SQLite connection & CRUD operations
-├── models.py        # Pydantic validation & response schemas
-├── requirements.txt # Python dependencies
-└── README.md        # Documentation and running instructions
-```
+*Note: If the plain `uvicorn` command is not recognised on Windows because the Python Scripts folder is not on PATH, use `python -m uvicorn` as shown above.*
 
----
+## Inputs and ranges
+All inputs use metric units and are validated on the backend:
 
-## Setup & Running Locally
-
-### Step 1: Install Dependencies
-Open your terminal in the project directory and run:
-```bash
-pip install -r requirements.txt
-```
-
-### Step 2: Start the Backend Server
-Start the Uvicorn server with hot reloading enabled:
-```bash
-python -m uvicorn main:app --reload
-```
-*(Or `uvicorn main:app --reload` if your Python Scripts folder is in your system PATH)*
-
-The API will be available at:
-- **API Base URL:** `http://127.0.0.1:8000`
-- **Interactive Swagger Docs:** `http://127.0.0.1:8000/docs`
-- **ReDoc:** `http://127.0.0.1:8000/redoc`
-
----
-
-## Database Schema
-
-The database table `designs` is automatically initialized on application startup in `cranes.db`:
-
-| Column | Type | Constraints | Description |
+| Input | Unit | Allowed Range | Description |
 |---|---|---|---|
-| `id` | `INTEGER` | `PRIMARY KEY AUTOINCREMENT` | Unique design identifier |
-| `name` | `TEXT` | `NOT NULL` | Design name (1-100 characters) |
-| `span_m` | `REAL` | `NOT NULL` | Crane girder span in meters (5.0 - 30.0) |
-| `capacity_t` | `REAL` | `NOT NULL` | Crane rated capacity in tonnes (1.0 - 20.0) |
-| `lift_height_m` | `REAL` | `NOT NULL` | Crane lift height in meters (3.0 - 15.0) |
-| `girder_height_mm` | `INTEGER` | `NOT NULL` | Girder height in millimeters (300 - 1500) |
-| `created_at` | `TEXT` | `NOT NULL` | ISO 8601 UTC creation timestamp |
-| `updated_at` | `TEXT` | `NOT NULL` | ISO 8601 UTC update timestamp |
+| Span | m | 5 to 30 | Width the crane girder covers, entered by the user |
+| Capacity | tonnes (t) | 1 to 20 | Crane capacity entered by the user |
+| Lift Height | m | 3 to 15 | Maximum vertical travel of the hook |
+| Girder Height | mm | 300 to 1500 | Main beam cross-section height (integer) |
 
----
-
-## Validation Rules
-
-- `name`: Non-empty string, max 100 characters.
-- `span_m`: Float between `5.0` and `30.0`.
-- `capacity_t`: Float between `1.0` and `20.0`.
-- `lift_height_m`: Float between `3.0` and `15.0`.
-- `girder_height_mm`: Integer between `300` and `1500`.
-
-Invalid requests return HTTP `422 Unprocessable Entity` with field-level validation errors.
-Non-existent IDs return HTTP `404 Not Found`.
-
----
-
-## API Endpoints Overview
+## API endpoints
 
 | Method | Endpoint | Description |
 |---|---|---|
-| `GET` | `/api/health` | Health check endpoint returning `{"status": "ok"}` |
-| `POST` | `/api/designs` | Create a new crane design |
-| `GET` | `/api/designs` | List all crane designs (newest first) |
-| `GET` | `/api/designs/{id}` | Get a single crane design by ID (404 if not found) |
-| `PUT` | `/api/designs/{id}` | Update a crane design by ID (404 if not found) |
-| `POST` | `/api/calculate` | Compute drawing numbers from 4 inputs (stateless) |
+| `GET` | `/api/health` | Returns service health status `{"status": "ok"}`. |
+| `POST` | `/api/calculate` | Takes the 4 crane inputs, returns drawing dimensions and notes without saving. |
+| `POST` | `/api/designs` | Validates and saves a new crane design to the SQLite database. |
+| `GET` | `/api/designs` | Returns all saved crane designs, sorted newest first. |
+| `GET` | `/api/designs/{id}` | Returns a single design by ID, or 404 if not found. |
+| `PUT` | `/api/designs/{id}` | Updates an existing design by ID, or 404 if not found. |
 
----
+## Stack and why
+- **Python + FastAPI**: I know Python well. FastAPI provides automatic data validation with Pydantic and clear error messages when an input is invalid.
+- **SQLite**: Standard library module (`sqlite3`). It uses a single local file (`cranes.db`), requires zero setup or external database server, and keeps saved designs intact across server restarts.
+- **Plain HTML, CSS, and JavaScript with SVG**: Requires no build step or node tooling. SVG scales cleanly at any screen resolution and renders fast in any browser.
+- **Uvicorn**: Standard, lightweight ASGI server to run the FastAPI application.
 
-## Example Requests (cURL)
+## How the drawing numbers are decided
+- **Girder length**: Equals the span (this is by definition, not a formula).
+- **Hook height**: Equals the lift height (taken directly from user input).
+- **Girder height**: Taken directly from user input (I did not invent any beam sizing formulas or standard tables).
+- **Trolley position**: Shown at the centre of the span (`span_m / 2`), which is my chosen assumption for concept visualization.
+- **End truck width**: Fixed placeholder value of 800 mm, clearly labelled as an estimate with no source, to be confirmed with engineers.
 
-### 1. Health Check
-```bash
-curl -X GET "http://127.0.0.1:8000/api/health"
-```
+## Known limitations
+- Single girder top-running EOT cranes only.
+- No real engineering formulas, deflection limits, or structural load calculations.
+- 2D views only (no 3D model).
+- Trolley position is fixed at the centre of the span.
+- End truck width is a fixed estimate.
+- No user accounts or authentication.
 
-### 2. Calculate Drawing Numbers
-```bash
-curl -X POST "http://127.0.0.1:8000/api/calculate" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "span_m": 18.0,
-    "capacity_t": 10.0,
-    "lift_height_m": 8.0,
-    "girder_height_mm": 900
-  }'
-```
-
-### 3. Create a Design
-```bash
-curl -X POST "http://127.0.0.1:8000/api/designs" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Heavy Duty Factory Crane",
-    "span_m": 22.5,
-    "capacity_t": 15.0,
-    "lift_height_m": 9.0,
-    "girder_height_mm": 1100
-  }'
-```
-
-### 4. List All Designs
-```bash
-curl -X GET "http://127.0.0.1:8000/api/designs"
-```
-
-### 5. Get Design by ID
-```bash
-curl -X GET "http://127.0.0.1:8000/api/designs/1"
-```
-
-### 6. Update Design by ID
-```bash
-curl -X PUT "http://127.0.0.1:8000/api/designs/1" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Heavy Duty Factory Crane - Rev 2",
-    "span_m": 24.0,
-    "capacity_t": 15.0,
-    "lift_height_m": 9.5,
-    "girder_height_mm": 1200
-  }'
-```
+## Time spent
+About 5 hours of focused work, spread across one day (22 November 2026).
