@@ -1,7 +1,9 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import List
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 import database
 from models import (
@@ -162,3 +164,10 @@ def calculate_drawing_dimensions(payload: CalculationRequest):
         end_truck_width_note="estimate: fixed placeholder value, no source, to be confirmed with engineers",
         notes=notes,
     )
+
+
+# Serve static frontend files at root
+STATIC_DIR = Path(__file__).parent / "static"
+STATIC_DIR.mkdir(parents=True, exist_ok=True)
+app.mount("/", StaticFiles(directory=str(STATIC_DIR), html=True), name="static")
+

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parametric Overhead Crane Drawing Generator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <h1 class="header-title">Parametric Overhead Crane Drawing Generator</h1>
+      <p class="header-subtitle">Single girder EOT crane concept drawing tool</p>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <!-- Top Section: Left (Inputs) and Right (Drawings) -->
+    <div class="top-grid">
+      <!-- Left Panel: Input Form -->
+      <section class="panel input-panel">
+        <div class="panel-header">
+          <h2>Design Parameters</h2>
+          <span id="activeBadge" class="status-badge badge-new">New Design</span>
+        </div>
+
+        <form id="craneForm" onsubmit="return false;" novalidate>
+          <div class="form-group">
+            <label for="inputName">Design Name <span class="req">*</span></label>
+            <input type="text" id="inputName" name="name" maxlength="100" value="Standard Workshop Crane" placeholder="e.g. Workshop Bay 1 Crane" required>
+            <div class="field-meta">Required, max 100 characters</div>
+          </div>
+
+          <div class="form-group">
+            <label for="inputSpan">Span (m) <span class="unit-tag">m</span></label>
+            <input type="number" id="inputSpan" name="span_m" min="5" max="30" step="0.1" value="16.0" required>
+            <div class="field-meta">Allowed range: 5 to 30 m</div>
+          </div>
+
+          <div class="form-group">
+            <label for="inputCapacity">Capacity (tonnes) <span class="unit-tag">t</span></label>
+            <input type="number" id="inputCapacity" name="capacity_t" min="1" max="20" step="0.5" value="10.0" required>
+            <div class="field-meta">Allowed range: 1 to 20 tonnes</div>
+          </div>
+
+          <div class="form-group">
+            <label for="inputLiftHeight">Lift Height (m) <span class="unit-tag">m</span></label>
+            <input type="number" id="inputLiftHeight" name="lift_height_m" min="3" max="15" step="0.1" value="6.5" required>
+            <div class="field-meta">Allowed range: 3 to 15 m</div>
+          </div>
+
+          <div class="form-group">
+            <label for="inputGirderHeight">Girder Height (mm) <span class="unit-tag">mm</span></label>
+            <input type="number" id="inputGirderHeight" name="girder_height_mm" min="300" max="1500" step="10" value="800" required>
+            <div class="field-meta">Allowed range: 300 to 1500 mm (integer)</div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="btn-group">
+            <button type="button" id="btnSave" class="btn btn-primary">Save Design</button>
+            <button type="button" id="btnUpdate" class="btn btn-secondary" disabled>Update Design</button>
+            <button type="button" id="btnReset" class="btn btn-outline">New</button>
+          </div>
+        </form>
+
+        <!-- Notification & Error Display -->
+        <div id="errorArea" class="alert alert-error" style="display: none;" role="alert"></div>
+        <div id="successArea" class="alert alert-success" style="display: none;" role="status"></div>
+      </section>
+
+      <!-- Right Panel: Drawings -->
+      <section class="panel drawing-panel">
+        <div class="panel-header">
+          <h2>Concept Drawings</h2>
+          <span class="drawing-sublabel">Parametric SVG (Live Preview)</span>
+        </div>
+
+        <div class="drawings-layout">
+          <!-- Front View -->
+          <div class="drawing-card">
+            <div class="drawing-title">Front Elevation View</div>
+            <div class="svg-container">
+              <svg id="frontViewSvg" viewBox="0 0 900 420" preserveAspectRatio="xMidYMid meet">
+                <!-- Rendered dynamically -->
+              </svg>
+            </div>
+          </div>
+
+          <!-- Side View -->
+          <div class="drawing-card">
+            <div class="drawing-title">Side Elevation View</div>
+            <div class="svg-container">
+              <svg id="sideViewSvg" viewBox="0 0 420 420" preserveAspectRatio="xMidYMid meet">
+                <!-- Rendered dynamically -->
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notes and Assumptions Section -->
+        <div class="notes-box">
+          <div class="notes-heading">Calculation Notes & Technical Assumptions:</div>
+          <ul id="notesList" class="notes-items">
+            <!-- Populated from /api/calculate notes list -->
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <!-- Bottom Section: Saved Designs List -->
+    <section class="panel saved-panel">
+      <div class="panel-header">
+        <h2>Saved Designs</h2>
+        <button type="button" id="btnRefresh" class="btn btn-sm btn-outline">Refresh</button>
+      </div>
+
+      <div class="table-container">
+        <table class="designs-table">
+          <thead>
+            <tr>
+              <th style="width: 50px;">ID</th>
+              <th>Design Name</th>
+              <th style="width: 100px;">Span (m)</th>
+              <th style="width: 110px;">Capacity (t)</th>
+              <th style="width: 120px;">Lift Height (m)</th>
+              <th style="width: 140px;">Girder Height (mm)</th>
+              <th style="width: 170px;">Last Updated (UTC)</th>
+              <th style="width: 90px; text-align: center;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="designsTableBody">
+            <tr>
+              <td colspan="8" class="empty-state">Loading saved designs...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
