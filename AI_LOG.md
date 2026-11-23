@@ -2,7 +2,7 @@
 
 ## 1. Tools used
 - **Antigravity (AI coding agent)**: Used for writing, editing, and executing code and test scripts directly in the workspace from my prompts.
-- **Muse**: Used for planning the project stages, reviewing visual screenshots, and preparing structured prompts before sending them to the agent.
+- **Claude ai + Muse**: Used for planning the project stages, reviewing visual screenshots, and preparing structured prompts before sending them to the agent.
 
 ## 2. How I worked
 I split the project into small, manageable steps: requirements, system design, backend development, frontend construction, drawing refinements, and testing. After each step, I ran the code, reviewed the result, and verified that everything worked before moving on to the next prompt.
