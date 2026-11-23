@@ -1,0 +1,23 @@
+## Who is the user, and what do they need?
+Our user is a crane company engineer whose takes requiremnts from the customer like span, capaciy, lift height, girder height and note it down. After taking requirements engineer create a first conceptual diagam with hand and it takes more time to create that conceptual diagam. This software helps engineer to convert customer requirements into proper diagram within few minutes. This saves customer and engineer time. The major benefit of that software is the engineer handles maximum customer in a day. For example, if engineer handles 5 customers in a day and create every daigarm form scratch and manually then after using this software he can handle maximum customers in a day. This is not a final diagram its only a conceptual based diagrams that clarify customer needs and the final diagram is prepared by Design engineer. He can save his time and get more customer and eventually more customer grow company business.
+
+## What did you assume (crane type, inputs, units, ranges), and why?
+I choose single girder crane type because it is easy and simple to develop according to our time. How it is easy? In single crane there is only one beam with trolley and it is easy to show one beam, one trolley, one hook. On the onether hand two girder crane is difficult to show in a diagram because it contains two beams with trolley adjustment on it. And if we consider from the development side it is also dificult related by validations checkups etc. In double girder if we deep dive in inputs logic we futer test validtions, testing, map different inputs to drawing impression that hows differnt inputs looks like in the side view diagram. Is it everything working good? And every extra inputs make chances of bugs. So that's why i decide this. In engineering meter, tones, mm is a common terms and if we use all these in a system that it makes less confusion. According to ranges perspective i choose these ranges on myself like span 5 to 30, capacity 1 to 20, lift 3 to 15, girder 300 to 1500. It's not any type of industrial rule.
+
+## Where did each formula or rule come from, and how sure are you?
+I do not use any type of formulas in this system. It's a basic definations like. Girder length equal to span. Span is the distance between two side in which beam is running and definetely beams length is equal to span. And we take hook height as a input from the user and lift height is equals to hook height. So i did not caluculate any thing. Next important point comes that is Girder height and we take this from user input and i do not invent ay type of formulas because it is engineering side and i am not a crane engineer. In trolley diagram i adjust it in spane center and its my assumption becaue its looking good as the drawing perspective. In real scenrio trolley are running between on the beams. I use this only for drawing purpose and the final positiond is finalized by Design engineer. I use assumption and estimate words with truck width and its my estimated numbers. I don't have any type of sources for this.
+
+## What did you leave out on purpose?
+I leave some steps in which includes, Crane Engineering calculations, double girder crane, 3D diagrams, User logins, pdf export. Reason is simple that i leave engineering calculations on the behalf of mine because its engineering side and crane engineer know better the calculations that's why I simply build MVP and i will include differnt features time to time.
+
+## What three questions would you ask our engineers?
+I want to know about these questions.
+1: What are the inputs that crane engineer take in first meeting? Is these 4 inputs are enough or we need more?
+3: Is a Single girder version is good in this tool or customer want double girder version?
+4:How we can determine girder height? Is any formula or table that we can use for calculations?
+
+## What would you do with another week?
+First of all i will work on engineers answers that i have ask in Question 5 and i will make software as per engineer suggestions like girder height related question and remove assumptions or estimate lable from diagram.
+After that i will work on customer delievrability features like how engineers delievr this into customer and add feature like Pdf export etc.
+After all i will spend my most time in testing and validations and test overlapping issues like if we increase, decrease dimesions in different angel the how our tool work? Is it overlapping dimesions, labels, text etc. So it is the major part.
+And definitely i will deply work on users login authentications and security related features and make our system more relaiable.
